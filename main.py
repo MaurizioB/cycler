@@ -23,14 +23,23 @@ class Cycler():
         self.cycler.set_decorated(False)
         self.cycler.set_keep_above(True)
         self.cycler.set_resizable(False)
+        self.cycler.set_accept_focus(True)
 
         #self.cycler.set_default_size(640, -1)
 
-        self.cycler.connect('key-release-event', self._release)
-        self.cycler.connect('key-press-event', self._press)
+        self.hidden = gtk.Window()
+        self.hidden.connect('key-release-event', self._release)
+        self.hidden.set_decorated(False)
+        self.hidden.set_skip_taskbar_hint(True)
+        self.hidden.set_skip_pager_hint(True)
+        self.hidden.set_default_size(0, 0)
+        #self.hidden.connect('focus-out-event', self._hide)
+        #self.hidden.iconify()
+        
+        #self.cycler.connect('key-press-event', self._press)
         self.cycler.connect('show', self._shown)
         self.cycler.connect('hide', self._hidden)
-        self.cycler.connect('focus-out-event', self._hide)
+        #self.cycler.connect('focus-out-event', self._hide)
         #self.cycler.connect('window-state-event', self._alert)
         #self.cycler.connect('button-release-event', self._raise)
 
@@ -55,7 +64,7 @@ class Cycler():
         keybinder.bind('<Alt>Tab', self._altTab, 1)
         keybinder.bind('<Alt>ISO_Left_Tab', self._altTab, -1)
         #keybinder.bind('Alt_L', self._alert)
-        keybinder.bind('<Release>s', self._alert)
+        #keybinder.bind('<Release>s', self._alert)
 
     def _alert(self):
         #print dir(event)
@@ -67,8 +76,11 @@ class Cycler():
     def _hide(self, window, event):
         print 'hide'
         self.cycler.hide()
+        self.hidden.hide()
 
     def _hidden(self, window):
+        self.hidden.hide()
+        return
         #print 'hidden'
         try:
             keybinder.bind('<Alt>Tab', self._altTab)
@@ -80,6 +92,8 @@ class Cycler():
 
         if not self.cycler.get_property('visible'):
             self.cycler.show()
+            self.hidden.show()
+            self.hidden.move(-1, -1)
 
         if self.focusing >= len(self.ordered):
             self.focusing = 0
@@ -185,7 +199,6 @@ class Cycler():
             self._focus()
 
     def _release(self, window, event):
-        print 'agfdfg'
         key = gtk.gdk.keyval_name(event.keyval)
         #print key
         if key == 'Alt_L' or key == 'Meta_L':
