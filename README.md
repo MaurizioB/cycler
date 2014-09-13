@@ -9,6 +9,11 @@ Still at early development stage, alt key release is a big problem, since the
 gtk's keybinder module does not allow to detect a key release (or at least I
 do not know how).
 
+Dependencies
+------------
+
+pyGtk, wnck
+
 
 Running
 -------
